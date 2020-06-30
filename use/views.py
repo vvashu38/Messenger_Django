@@ -65,7 +65,7 @@ def loggedin(request):
     if user is None:
         render(request, "logged.html")
 
-    a = Inbox.get_conversation(user, user1, 50 , True , True).values()
+    a = Inbox.get_conversation(user, user1, 20 , True , True).values()
     list_result = [entry for entry in a]
     if request.is_ajax():
         increment = int(request.GET['append_increment'])
@@ -75,15 +75,28 @@ def loggedin(request):
         return render(request, "logged.html", {'a' : list_result, 'user1' : user1 , 'users' : users , 'myusername' : myusername})
 
 def message(request):
-    user1 = request.POST["tosend"]
-    a = request.POST["message"]
+    user1 = request.POST.get("tosend")
+    a = request.POST.get("message")
+
     user = User.objects.get(username=request.user.username)
-    user1 = User.objects.get(username=user1)
-    users = User.objects.values_list('username', flat=True)
     myusername = User.objects.get(username=request.user.username)
+    users = User.objects.values_list('username', flat=True)
+
+    if user1 is None:
+        user1 = request.POST.get('refresh')
+        user1 = User.objects.get(username=user1)
+        a = Inbox.get_conversation(user, user1, 20, True, True).values()
+        list_result = [entry for entry in a]
+        return render(request, "logged.html",
+                      {'a': list_result, 'user1': user1, 'users': users, 'myusername': myusername})
+
+
+    user1 = User.objects.get(username=user1)
+
+
     Inbox.send_message(user, user1, a)
 
-    a = Inbox.get_conversation(user, user1, 50, True, True).values()
+    a = Inbox.get_conversation(user, user1, 20, True, True).values()
     list_result = [entry for entry in a]
     return render(request, "logged.html", {'a': list_result, 'user1': user1, 'users': users, 'myusername': myusername})
 

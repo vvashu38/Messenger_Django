@@ -50,6 +50,10 @@
 					<input type="text" name="message" placeholder="Enter your message" required>
 					<button name="tosend" type="submit" value={{ user1 }}>SEND</button>
 				</form>
+<form action="message" method="post">
+	{% csrf_token %}
+	<button name="refresh" type="submit" value={{ user1 }}>REFRESH</button>
+</form>
 
 
 
