@@ -53,7 +53,7 @@ def register(request):
 
 def loggedin(request):
     user = User.objects.get(username=request.user.username)
-    user1 = User.objects.get(username='john')
+    user1 = None
     users = User.objects.values_list('username', flat=True)
     myusername = User.objects.get(username=request.user.username)
     #user2 = User.objects.get(username='mridul')
@@ -61,6 +61,9 @@ def loggedin(request):
     if request.method == 'POST':
         friendusername = request.POST["friend"]
         user1 = User.objects.get(username=friendusername)
+
+    if user is None:
+        render(request, "logged.html")
 
     a = Inbox.get_conversation(user, user1, 50 , True , True).values()
     list_result = [entry for entry in a]
@@ -70,6 +73,23 @@ def loggedin(request):
         return render(request, "logged.html", {'a': list_result[increment:increment_to] , 'user1': user1})
     else:
         return render(request, "logged.html", {'a' : list_result, 'user1' : user1 , 'users' : users , 'myusername' : myusername})
+
+def message(request):
+    user1 = request.POST["tosend"]
+    a = request.POST["message"]
+    user = User.objects.get(username=request.user.username)
+    user1 = User.objects.get(username=user1)
+    users = User.objects.values_list('username', flat=True)
+    myusername = User.objects.get(username=request.user.username)
+    Inbox.send_message(user, user1, a)
+
+    a = Inbox.get_conversation(user, user1, 50, True, True).values()
+    list_result = [entry for entry in a]
+    return render(request, "logged.html", {'a': list_result, 'user1': user1, 'users': users, 'myusername': myusername})
+
+
+
+
 
 def logout(request):
     auth.logout(request)
