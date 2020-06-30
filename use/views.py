@@ -54,8 +54,14 @@ def register(request):
 def loggedin(request):
     user = User.objects.get(username=request.user.username)
     user1 = User.objects.get(username='john')
+    users = User.objects.values_list('username', flat=True)
+    myusername = User.objects.get(username=request.user.username)
     #user2 = User.objects.get(username='mridul')
     #Inbox.send_message(user, user1, "fhgfhf")
+    if request.method == 'POST':
+        friendusername = request.POST["friend"]
+        user1 = User.objects.get(username=friendusername)
+
     a = Inbox.get_conversation(user, user1, 50 , True , True).values()
     list_result = [entry for entry in a]
     if request.is_ajax():
@@ -63,7 +69,7 @@ def loggedin(request):
         increment_to = increment + 10
         return render(request, "logged.html", {'a': list_result[increment:increment_to] , 'user1': user1})
     else:
-        return render(request, "logged.html", {'a' : list_result, 'user1' : user1})
+        return render(request, "logged.html", {'a' : list_result, 'user1' : user1 , 'users' : users , 'myusername' : myusername})
 
 def logout(request):
     auth.logout(request)
