@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>LOGIN</title>
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<li> Hello, {{user.username}} </li>
+<h1> <a href="logout"> Logout </a> </h1>
+{% endif %}
+
+
+ <ol id="message">
+ {% for x in a %}
+    {% if user.id == x.sender_id %}
+ <li>{{ user.username }} : {{ x.content }}</li>
+    {% elif user1.id == x.sender_id  %}
+     <li> {{ user1.username }} : {{ x.content }}</li>
+
+     {% endif %}
+    {% endfor %}
+ </ol>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script> <!-- ADD THE CLOSING TAG HERE TOO! -->
+
+<script>  // <-- ADD THIS!
+     var append_increment = 0;
+     setInterval(function() {
+    $.ajax({
+            type: "GET",
+            url: "{% url 'loggedin' %}",
+            data: {'append_increment': append_increment}
+        })
+        .done(function(response) {
+            $("#message").append(response);
+            append_increment += 10;
+        });
+     },1000)
+
+</script>
+
+</body>
+</html>
