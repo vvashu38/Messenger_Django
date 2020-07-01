@@ -5,7 +5,7 @@ defusedxml==0.6.0
 dj-database-url==0.5.0
 Django==3.0.7
 django-allauth==0.42.0
-django-directmessages==0.9.7
+git+https://github.com/vvashu38/django-directmessages.git
 django-heroku==0.3.1
 djangorestframework==3.11.0
 gunicorn==20.0.4
