@@ -11,7 +11,7 @@
 
 {% if user.is_authenticated %}
 <li> Hello, {{user.username}} </li>
-<h1> <a href="logout"> Logout </a> </h1>
+<h1> <a href="/logout"> Logout </a> </h1>
 {% endif %}
 
 
@@ -34,7 +34,7 @@
 </form>
 
 
- <ol id="message">
+ <ol >
  {% for x in a %}
     {% if user.id == x.sender_id %}
  <li>{{ user.username }} : {{ x.content }}</li>
@@ -45,12 +45,12 @@
     {% endfor %}
  </ol>
 
-<form action="message" method="post">
+<form action="/message" method="post">
 					{% csrf_token %}
 					<input type="text" name="message" placeholder="Enter your message" required>
 					<button name="tosend" type="submit" value={{ user1 }}>SEND</button>
 				</form>
-<form action="message" method="post">
+<form action="/message" method="post">
 	{% csrf_token %}
 	<button name="refresh" type="submit" value={{ user1 }}>REFRESH</button>
 </form>

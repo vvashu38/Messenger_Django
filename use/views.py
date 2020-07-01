@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 import json
 
+
 # Create your views here.
 
 def login(request):
@@ -51,28 +52,26 @@ def register(request):
         return render(request, 'registration.html')
 
 
-def loggedin(request):
+def loggedin(request, friendusername=None):
     user = User.objects.get(username=request.user.username)
-    user1 = None
     users = User.objects.values_list('username', flat=True)
     myusername = User.objects.get(username=request.user.username)
-    #user2 = User.objects.get(username='mridul')
-    #Inbox.send_message(user, user1, "fhgfhf")
+    user1 = None
     if request.method == 'POST':
-        friendusername = request.POST["friend"]
+        friendusername = request.POST.get("friend")
+        return redirect("loggedin", friendusername=friendusername)
+        # user1 = User.objects.get(username=friendusername)
+
+    if friendusername is None:
+        render(request, "logged.html")
+    else:
         user1 = User.objects.get(username=friendusername)
 
-    if user is None:
-        render(request, "logged.html")
-
-    a = Inbox.get_conversation(user, user1, 20 , True , True).values()
+    a = Inbox.get_conversation(user, user1, 20, True, True).values()
     list_result = [entry for entry in a]
-    if request.is_ajax():
-        increment = int(request.GET['append_increment'])
-        increment_to = increment + 10
-        return render(request, "logged.html", {'a': list_result[increment:increment_to] , 'user1': user1})
-    else:
-        return render(request, "logged.html", {'a' : list_result, 'user1' : user1 , 'users' : users , 'myusername' : myusername})
+
+    return render(request, "logged.html", {'a': list_result, 'user1': user1, 'users': users, 'myusername': myusername})
+
 
 def message(request):
     user1 = request.POST.get("tosend")
@@ -84,15 +83,9 @@ def message(request):
 
     if user1 is None:
         user1 = request.POST.get('refresh')
-        user1 = User.objects.get(username=user1)
-        a = Inbox.get_conversation(user, user1, 20, True, True).values()
-        list_result = [entry for entry in a]
-        return render(request, "logged.html",
-                      {'a': list_result, 'user1': user1, 'users': users, 'myusername': myusername})
-
+        return redirect("loggedin", friendusername=user1)
 
     user1 = User.objects.get(username=user1)
-
 
     Inbox.send_message(user, user1, a)
 
@@ -101,11 +94,6 @@ def message(request):
     return render(request, "logged.html", {'a': list_result, 'user1': user1, 'users': users, 'myusername': myusername})
 
 
-
-
-
 def logout(request):
     auth.logout(request)
     return redirect('/')
-
-
