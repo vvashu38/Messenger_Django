@@ -1,1 +1,1 @@
-web: gunicorn todoo.wsgi --log-file -
+web: gunicorn Chat.wsgi --log-file -
